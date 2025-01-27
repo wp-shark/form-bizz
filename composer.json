@@ -1,0 +1,20 @@
+{
+	"name": "iqbal/form-bzz",
+	"description": "Form Plugins",
+	"type": "wordpress-plugin",
+	"license": "GPLv2",
+	"authors": [
+		{
+			"name": "Iqbal Hossain",
+			"email": "iqbalgazi2021@gmail.com"
+		}
+	],
+	"minimum-stability": "dev",
+	"require": {},
+	"autoload": {
+		"psr-4": {
+			"FormBizz\\": "includes/"
+		},
+		"files": []
+	}
+}
