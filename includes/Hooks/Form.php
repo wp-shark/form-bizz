@@ -41,17 +41,41 @@ class Form {
 	// Rest api callback
 	public function formbizz_post_callback($param)
 	{
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'formbizz_submissions';
+
+		// Decode JSON body
 		$body = $param->get_body();
 		$request = json_decode($body, true);
 
-		error_log(print_r($request, true));
+		// Check if request is empty
+		if (empty($request)) {
+			return new \WP_REST_Response([
+				'success' => false,
+				'message' => 'Request body cannot be empty'
+			], 400);
+		}
 
-		// Process the request data and return a response
-		$response = array(
+		// Insert into database
+		$wpdb->insert($table_name, [
+			'name' => sanitize_text_field($request['name']),
+			'email' => sanitize_email($request['email']),
+			'message' => sanitize_textarea_field($request['message']),
+		]);
+
+		// Check if insert was successful
+		if ($wpdb->last_error) {
+			return new \WP_REST_Response([
+				'success' => false,
+				'message' => 'Database error: ' . $wpdb->last_error
+			], 500);
+		}
+
+		// Return success response
+		return new \WP_REST_Response([
 			'success' => true,
-			'data' => $request,
-		);
-
-		return new \WP_REST_Response($response, 200);
+			'message' => 'Data stored successfully',
+			'data' => $request
+		], 200);
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Form Bizz
- * Description:       Example block scaffolded with Create Block tool.
+ * Description:       Simple Form blocks plugin.
  * Version:           1.0.0
  * Requires at least: 6.7
  * Requires PHP:      7.4
@@ -59,6 +59,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		// Load after plugin activation
 		register_activation_hook( __FILE__, array( $this, 'activated_plugin' ) );
 
+		// Load after plugin deactivation
+		register_deactivation_hook(__FILE__, array($this, 'deactivated_plugin'));
+
 		// Make sure ADD AUTOLOAD is vendor/autoload.php file
 		require_once FORMBIZZ_PLUGIN_DIR . 'vendor/autoload.php';
 
@@ -90,8 +93,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	 * @since 1.0.0
 	 */
 	public function activated_plugin() {
+		// create the database table
+		\FormBizz\Hooks\DataBase::createDB();
+
 		// update vertion to the options table
-		update_option( 'formbizz_version', ELEMENTRIO_PLUGIN_VERSION );
+		update_option( 'formbizz_version', FORMBIZZ_PLUGIN_VERSION );
 
 		// added installed time after checking time exist or not
 		if ( ! get_option( 'formbizz_installed_time' ) ) {
@@ -100,6 +106,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		// redirect to the settings page after activation
 		add_option('formbizz_do_activation_redirect', true);
+	}
+
+	/**
+	 * Deactivated plugin method.
+	 *
+	 * @return void
+	 * @since 1.0.0
+	 */
+	public function deactivated_plugin() {
 	}
 
 	/**
@@ -134,6 +149,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 		 * @since 1.2.9
 		 */
 		FormBizz\Hooks\Form::instance();
+
+		/**
+		 * Action & Filter hooks.
+		 *
+		 * @return void
+		 * @since 1.2.9
+		 */
+		FormBizz\Hooks\Admin::instance();
 
 		/**
 		 * Fires after the initialization of the Elementrio plugin.

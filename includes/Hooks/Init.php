@@ -21,6 +21,7 @@ class Init {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		// Enqueue scripts
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 	}
 
