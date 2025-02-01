@@ -58,9 +58,9 @@ class Form {
 
 		// Insert into database
 		$wpdb->insert($table_name, [
-			'name' => sanitize_text_field($request['name']),
-			'email' => sanitize_email($request['email']),
-			'message' => sanitize_textarea_field($request['message']),
+			'name'    => isset($request['name']) ? sanitize_text_field($request['name']) : '',
+			'email'   => isset($request['email']) ? sanitize_email($request['email']) : '',
+			'message' => isset($request['message']) ? sanitize_textarea_field($request['message']) : '',
 		]);
 
 		// Check if insert was successful

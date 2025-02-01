@@ -27,7 +27,7 @@ $entries = $wpdb->get_results("SELECT * FROM $table_name ORDER BY id DESC");
                         <td><?php echo esc_html($entry->name); ?></td>
                         <td><?php echo esc_html($entry->email); ?></td>
                         <td><?php echo esc_textarea($entry->message); ?></td>
-                        <td><?php echo esc_html(date('Y-m-d H:i:s', strtotime($entry->created_at))); ?></td>
+                        <td><?php echo esc_html(gmdate('Y-m-d H:i:s', strtotime($entry->created_at))); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

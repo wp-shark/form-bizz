@@ -27,6 +27,7 @@ const Markup = ({ attributes }) => {
 				)}
 				<button type="submit">Send Message</button>
 			</form>
+			<span className="success-message"></span>
 		</div>
 	);
 };

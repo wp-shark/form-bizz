@@ -31,24 +31,27 @@ class DataBase {
         dbDelta( $sql );
 
         // Save the database version
-        add_option( 'pbb_db_version', self::$DATABASE_VERSION );
+        add_option( 'formbizz_db_version', self::$DATABASE_VERSION );
     }
 
     /**
-     * Drop the database table.
-     *
-     * @return void
-     * @since 1.0.0
-     */
-    public static function dropDB () {
-        global $wpdb;
+	 * Drop the database table.
+	 *
+	 * @return void
+	 * @since 1.0.0
+	 */
+	public static function dropDB() {
+		global $wpdb;
 
-        $table_name = $wpdb->prefix . self::$SUBSCRIBERS_TABLE;
-        $sql = "DROP TABLE IF EXISTS $table_name;";
-        $wpdb->query($sql);
+		$table_name = $wpdb->prefix . self::$SUBSCRIBERS_TABLE;
+		
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+		$sql = "DROP TABLE IF EXISTS $table_name;";
+		$wpdb->query($sql);
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
-        delete_option( 'pbb_db_version' );
-    }
+		delete_option('formbizz_db_version');
+	}
 
     /**
      * Insert into database table.
@@ -65,29 +68,45 @@ class DataBase {
     }
 
     /**
-     * Get data from database table.
-     *
-     * @return array
-     * @since 1.0.0
-     */
-    public static function getDB ($table, $where = '', $limit = 0, $count = false) {
-        global $wpdb;
+	 * Get data from database table.
+	 *
+	 * @param string       $table  Table name (without prefix).
+	 * @param array|string $where  Associative array for WHERE conditions or raw SQL (use with caution).
+	 * @param int          $limit  Limit for the number of records.
+	 * @param bool         $count  Whether to return a count of records.
+	 * @return array|int
+	 * @since 1.0.0
+	 */
+	public static function getDB($table, $where = [], $limit = 0, $count = false) {
+		global $wpdb;
 
-        $table_name = $wpdb->prefix . $table;
-        $sql = "SELECT * FROM $table_name";
+		$table_name = $wpdb->prefix . $table;
+		$sql = $count ? "SELECT COUNT(*) FROM $table_name" : "SELECT * FROM $table_name";
+		$query_args = [];
 
-        if ($count) {
-            $sql = "SELECT COUNT(*) FROM $table_name";
-        }
-        if ($where) {
-            $sql .= " WHERE $where";
-        }
-        if ($limit) {
-            $sql .= " LIMIT $limit";
-        }
+		// Handling WHERE conditions
+		if (!empty($where) && is_array($where)) {
+			$where_clauses = [];
+			foreach ($where as $column => $value) {
+				$where_clauses[] = "$column = %s";
+				$query_args[] = $value;
+			}
+			$sql .= ' WHERE ' . implode(' AND ', $where_clauses);
+		}
 
-        return $wpdb->get_results($sql);
-    }
+		// Handling LIMIT
+		if ($limit > 0) {
+			$sql .= " LIMIT %d";
+			$query_args[] = $limit;
+		}
+
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+		// Prepare the SQL query
+		$prepared_sql = $wpdb->prepare($sql, ...$query_args);
+
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+		return $count ? $wpdb->get_var($prepared_sql) : $wpdb->get_results($prepared_sql);
+	}
 
     /**
      * Update data in database table.

@@ -4,6 +4,7 @@
   \******************************/
 window.addEventListener('load', () => {
   const form = document.querySelector('.form-bizz');
+  const message = document.querySelector('.success-message');
   if (form) {
     form.addEventListener('submit', async e => {
       e.preventDefault();
@@ -25,6 +26,11 @@ window.addEventListener('load', () => {
         });
         const data = await response.json();
         if (data.success) {
+          message.textContent = data.message;
+          // Set a timeout to hide the message after 1 second (1000 milliseconds)
+          setTimeout(function () {
+            message.textContent = '';
+          }, 1000);
           form.reset();
         } else {
           alert(data.message || 'Form submission failed');
