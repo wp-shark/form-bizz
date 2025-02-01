@@ -4,12 +4,18 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
+none
 
 # Coverage directory used by tools like istanbul
 coverage
 
-# Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
+# OS X file
+**/.DS_Store
+
+# build file
+build/
+.wp-env.json
 
 # Dependency directories
 node_modules/
