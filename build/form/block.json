@@ -6,7 +6,7 @@
   "title": "Form Bizz",
   "category": "widgets",
   "icon": "smiley",
-  "description": "Example block scaffolded with Create Block tool.",
+  "description": "Form block to create a simple form.",
   "example": {},
   "attributes": {
     "hideName": {
